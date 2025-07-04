@@ -1,20 +1,21 @@
-const mongoose = require("mongoose");
-const dbUser = process.env.DB_USER;
-const dbPassword = process.env.DB_PASS;
+const { Pool } = require("pg");
+require("dotenv").config();
 
-const conn = async () => {
+const pool = new Pool({
+  user: process.env.DB_USER,
+  password: process.env.DB_PASS,
+  host: process.env.DB_HOST,
+  port: process.env.DB_PORT,
+  database: process.env.DB_NAME,
+});
+
+const connectToDB = async () => {
   try {
-    const dbConn = await mongoose.connect(
-      `mongodb+srv://nicolascarv:${dbPassword}@cluster0.adomvbe.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`
-    );
-
-    console.log("Conectou viu");
-
-    return dbConn;
+    await pool.connect();
+    console.log("Successfully connected to PostgreSQL!");
   } catch (error) {
-    console.log(error);
+    console.error("Connection error", error.stack);
   }
 };
 
-conn();
-module.exports = conn;
+module.exports = { pool, connectToDB };

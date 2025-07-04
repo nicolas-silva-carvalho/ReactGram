@@ -1,23 +1,64 @@
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+
+import { useAuth } from "./hooks/useAuth";
+
+import Footer from "./components/Footer";
+import Navbar from "./components/Navbar";
+
+import Home from "./pages/Home/Home";
+import Login from "./pages/Auth/Login";
+import Register from "./pages/Auth/Register";
+import EditProfile from "./pages/EditProfile/EditProfile";
+import Profile from "./pages/Profile/Profile";
 
 function App() {
+  const { auth, loading } = useAuth();
+
+  if (loading) {
+    return <p>Carregando...</p>;
+  }
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <BrowserRouter>
+        <Navbar></Navbar>
+        <div className="container">
+          <Routes>
+            <Route
+              path="/"
+              element={auth ? <Home></Home> : <Navigate to="/login"></Navigate>}
+            />
+            <Route
+              path="/profile"
+              element={
+                auth ? (
+                  <EditProfile></EditProfile>
+                ) : (
+                  <Navigate to="/"></Navigate>
+                )
+              }
+            />
+            <Route
+              path="/users/:id"
+              element={
+                auth ? <Profile></Profile> : <Navigate to="/"></Navigate>
+              }
+            />
+            <Route
+              path="/login"
+              element={!auth ? <Login></Login> : <Navigate to="/"></Navigate>}
+            />
+            <Route
+              path="/register"
+              element={
+                !auth ? <Register></Register> : <Navigate to="/"></Navigate>
+              }
+            />
+          </Routes>
+        </div>
+        <Footer></Footer>
+      </BrowserRouter>
     </div>
   );
 }
