@@ -76,10 +76,15 @@ const update = async (id, { title, image }) => {
 };
 
 const addLike = async (photoId, userId) => {
-  await pool.query("INSERT INTO likes (photo_id, user_id) VALUES ($1, $2)", [
-    photoId,
-    userId,
-  ]);
+  try {
+    await pool.query(
+      "INSERT INTO likes (photo_id, user_id) VALUES ($1, $2) ON CONFLICT DO NOTHING",
+      [photoId, userId]
+    );
+  } catch (error) {
+    console.error("Erro ao adicionar like:", error);
+    throw error;
+  }
 };
 
 const addComment = async (photoId, { comment, userId }) => {

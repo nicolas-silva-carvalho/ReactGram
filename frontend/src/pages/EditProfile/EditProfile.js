@@ -27,9 +27,11 @@ const EditProfile = () => {
 
   useEffect(() => {
     if (user) {
-      setName(user.name);
-      setEmail(user.email);
-      setPassword(user.password);
+      console.log(user);
+      setName(user.name || "");
+      setEmail(user.email || "");
+      //setPassword(user.password);
+      setBio(user.bio || "");
     }
   }, [user]);
 
@@ -38,6 +40,7 @@ const EditProfile = () => {
 
     const userData = {
       name,
+      bio,
     };
 
     if (profileImage) {
@@ -50,13 +53,9 @@ const EditProfile = () => {
 
     const formData = new FormData();
 
-    const userFormData = Object.keys(userData).forEach((key) =>
-      formData.append(key, userData[key])
-    );
+    Object.keys(userData).forEach((key) => formData.append(key, userData[key]));
 
-    formData.append("user", userFormData);
-
-    await dispatch(updateProfile(userFormData));
+    await dispatch(updateProfile(formData));
 
     setTimeout(() => {
       dispatch(resetMessage());
@@ -71,20 +70,27 @@ const EditProfile = () => {
     setImageProfile(image);
   };
 
+  const imageUrl = previewImage
+    ? URL.createObjectURL(previewImage)
+    : `${uploads}/users/${user?.profileImage}`;
+
+  console.log("URL da imagem:", imageUrl);
+
   return (
     <div id="edit-profile">
       <h2>Edite seus dados</h2>
       <p className="subtitle">
         Adicione uma imagem de perfil e conte mais sobre você.
       </p>
-      {(user.profileImage || previewImage) && (
+      {(previewImage || user?.profile_image) && (
         <img
           className="profile-image"
           src={
             previewImage
               ? URL.createObjectURL(previewImage)
-              : `${uploads}/users/${user.profileImage}`
+              : `${uploads}/users/${user.profile_image}`
           }
+          alt="Foto de perfil"
         />
       )}
       <form onSubmit={handleSubmit}>

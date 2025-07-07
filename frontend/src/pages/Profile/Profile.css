@@ -7,7 +7,7 @@
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  padding: 1em;
+  padding: 1rem;
   border-bottom: 1px solid #363636;
 }
 
@@ -15,5 +15,60 @@
   width: 100px;
   height: 100px;
   border-radius: 50%;
-  margin-right: 2em;
+  margin-right: 2rem;
+}
+
+.new-photo {
+  padding: 1rem;
+  border-bottom: 1px solid #363636;
+}
+
+.photos-container {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.photo {
+  width: 32%;
+  margin: 0.3%;
+}
+
+.photo img {
+  width: 100%;
+}
+
+.actions {
+  display: flex;
+  justify-content: space-around;
+  padding: 10px;
+}
+
+.actions svg {
+  cursor: pointer;
+}
+
+.edit-photo {
+  margin-bottom: 1rem;
+}
+
+.edit-photo img {
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+@media (max-width: 480px) {
+  #profile {
+    width: auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .profile-header img {
+    width: 80px;
+    height: 80px;
+  }
+
+  .photo {
+    width: 100%;
+  }
 }

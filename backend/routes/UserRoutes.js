@@ -24,9 +24,9 @@ router.get("/profile", authGuard, getCurrentUser);
 router.put(
   "",
   authGuard,
+  imageUpload.single("profileImage"),
   userUpdateValidation(),
   validate,
-  imageUpload.single("profileImage"),
   update
 );
 router.get("/:id", getUserById);

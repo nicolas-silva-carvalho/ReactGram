@@ -128,25 +128,27 @@ const likePhoto = async (req, res) => {
       return res.status(404).json({ errors: ["Photo not found."] });
     }
 
-    // Check if the photo has already been liked by this user
-    const alreadyLiked = photo.likes.some((like) => like.userId === reqUser.id);
+    // Verifica se o usuário já curtiu
+    const alreadyLiked = (photo.likes || []).some(
+      (like) => like.userId === reqUser.id
+    );
+
     if (alreadyLiked) {
       return res
         .status(422)
         .json({ errors: ["You have already liked this photo."] });
     }
 
+    // Adiciona o like no banco
     await Photo.addLike(id, reqUser.id);
 
-    res
-      .status(200)
-      .json({
-        photoId: id,
-        userId: reqUser.id,
-        message: "The photo was liked.",
-      });
+    return res.status(200).json({
+      photoId: id,
+      userId: reqUser.id,
+      message: "The photo was liked.",
+    });
   } catch (error) {
-    console.error(error);
+    console.error("Erro no likePhoto:", error);
     res.status(500).json({ errors: ["Internal server error."] });
   }
 };
