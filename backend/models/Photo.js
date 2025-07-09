@@ -41,9 +41,26 @@ const findById = async (id) => {
 };
 
 const findAll = async () => {
-  const { rows } = await pool.query(
-    "SELECT p.*, u.name as user_name FROM photos p JOIN users u ON p.user_id = u.id ORDER BY p.created_at DESC"
-  );
+  const query = `
+    SELECT
+      p.*,
+      u.name as user_name,
+      COALESCE(
+        (SELECT json_agg(json_build_object('userId', l.user_id))
+         FROM likes l WHERE l.photo_id = p.id), '[]'
+      ) as likes,
+      COALESCE(
+        (SELECT json_agg(json_build_object('comment', c.comment, 'userName', cu.name, 'userImage', cu.profile_image, 'userId', c.user_id))
+         FROM comments c
+         JOIN users cu ON c.user_id = cu.id
+         WHERE c.photo_id = p.id), '[]'
+      ) as comments
+    FROM photos p
+    JOIN users u ON p.user_id = u.id
+    ORDER BY p.created_at DESC
+  `;
+
+  const { rows } = await pool.query(query);
   return rows;
 };
 
@@ -55,11 +72,28 @@ const findByUserId = async (userId) => {
   return rows;
 };
 
-const findByTitle = async (query) => {
-  const { rows } = await pool.query(
-    "SELECT * FROM photos WHERE title ILIKE $1",
-    [`%${query}%`]
-  );
+const findByTitle = async (titleQuery) => {
+  const query = `
+    SELECT
+      p.*,
+      u.name as user_name,
+      COALESCE(
+        (SELECT json_agg(json_build_object('userId', l.user_id))
+         FROM likes l WHERE l.photo_id = p.id), '[]'
+      ) as likes,
+      COALESCE(
+        (SELECT json_agg(json_build_object('comment', c.comment, 'userName', cu.name, 'userImage', cu.profile_image, 'userId', c.user_id))
+         FROM comments c
+         JOIN users cu ON c.user_id = cu.id
+         WHERE c.photo_id = p.id), '[]'
+      ) as comments
+    FROM photos p
+    JOIN users u ON p.user_id = u.id
+    WHERE p.title ILIKE $1
+    ORDER BY p.created_at DESC
+  `;
+
+  const { rows } = await pool.query(query, [`%${titleQuery}%`]);
   return rows;
 };
 

@@ -1,0 +1,28 @@
+#home {
+  width: 50%;
+  margin: 0 auto;
+  padding-top: 2rem;
+}
+
+#home .btn {
+  display: block;
+  max-width: 80px;
+  text-align: center;
+  margin: 0.5rem 0 2rem 0;
+}
+
+.no-photos {
+  text-align: center;
+}
+
+.no-photos a {
+  color: #0094f6;
+}
+
+@media (max-width: 480px) {
+  #home {
+    width: fit-content;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}

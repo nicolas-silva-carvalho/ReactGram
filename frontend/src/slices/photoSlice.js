@@ -113,6 +113,26 @@ export const comment = createAsyncThunk(
   }
 );
 
+export const getPhotos = createAsyncThunk(
+  "photo/getall",
+  async (_, thunkAPI) => {
+    const token = thunkAPI.getState().auth.user.token;
+    const data = await photoService.getPhotos(token);
+
+    return data;
+  }
+);
+
+export const searchPhotos = createAsyncThunk(
+  "photo/search",
+  async (query, thunkAPI) => {
+    const token = thunkAPI.getState().auth.user.token;
+    const data = await photoService.searchPhotos(query, token);
+
+    return data;
+  }
+);
+
 export const photoSlice = createSlice({
   name: "photo",
   initialState,
@@ -208,15 +228,14 @@ export const photoSlice = createSlice({
         if (state.photo.likes) {
           state.photo.likes.push(action.payload.userId);
         }
-        state.photos = state.photos.map((photo) => {
-          if (photo.id === action.payload.photo_Id) {
-            return {
-              ...photo,
-              likes: [...photo.likes, action.payload.user_Id],
-            };
+
+        state.photos.map((photo) => {
+          if (photo.id === action.payload.photoId) {
+            return photo.likes.push(action.payload.userId);
           }
           return photo;
         });
+
         state.message = action.payload.message;
       })
       .addCase(like.rejected, (state, action) => {
@@ -233,6 +252,26 @@ export const photoSlice = createSlice({
       .addCase(comment.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+      .addCase(getPhotos.pending, (state) => {
+        state.loading = true;
+        state.error = false;
+      })
+      .addCase(getPhotos.fulfilled, (state, action) => {
+        state.loading = false;
+        state.success = true;
+        state.error = null;
+        state.photos = action.payload;
+      })
+      .addCase(searchPhotos.pending, (state) => {
+        state.loading = true;
+        state.error = false;
+      })
+      .addCase(searchPhotos.fulfilled, (state, action) => {
+        state.loading = false;
+        state.success = true;
+        state.error = null;
+        state.photos = action.payload;
       });
   },
 });
